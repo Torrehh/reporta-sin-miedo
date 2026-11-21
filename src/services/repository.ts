@@ -28,12 +28,14 @@ export interface ReportRepository {
   getReporteByCodigo(codigo: string): Promise<Reporte | undefined>
   obtenerReportePorCodigo(codigo: string): Promise<Reporte | undefined>
   guardarReporte(reporte: Reporte): Promise<void>
+  actualizarReporte(reporte: Reporte): Promise<void>
   obtenerIdentidad(reporteId: string): Promise<Identidad | undefined>
   guardarIdentidad(identidad: Identidad): Promise<void>
   registrarAuditoria(auditoria: AuditoriaIdentidad): Promise<void>
   listarAuditorias(): Promise<AuditoriaIdentidad[]>
   saveRepresalia(represalia: Represalia): Promise<void>
   listRepresalias(): Promise<Represalia[]>
+  actualizarRepresalia(represalia: Represalia): Promise<void>
   guardarRepresalia(represalia: Represalia): Promise<void>
   listarRepresalias(): Promise<Represalia[]>
   guardarAvisoSupervisor(aviso: AvisoSupervisor): Promise<void>
@@ -83,7 +85,7 @@ export class LocalRepository implements ReportRepository {
   }
 
   async getReporteByCodigo(codigo: string) {
-    // TODO: En producción, consultar el reporte mediante una Azure Function.
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
     const codigoNormalizado = normalizarCodigoSeguimiento(codigo)
     if (!codigoNormalizado) return undefined
     const reportes = await this.listarReportes()
@@ -101,20 +103,33 @@ export class LocalRepository implements ReportRepository {
     await (await this.dbPromise).put('reportes', reporte)
   }
 
+  async actualizarReporte(reporte: Reporte) {
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
+    await (await this.dbPromise).put('reportes', reporte)
+  }
+
   async obtenerIdentidad(reporteId: string) {
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
     return (await this.dbPromise).get('identidades', reporteId)
   }
 
   async guardarIdentidad(identidad: Identidad) {
-    // TODO: En producción, este almacén separado tendría permisos restringidos.
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
     await (await this.dbPromise).put('identidades', identidad)
   }
 
   async registrarAuditoria(auditoria: AuditoriaIdentidad) {
-    await (await this.dbPromise).put('auditoriasIdentidad', auditoria)
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
+    const db = await this.dbPromise
+    const tx = db.transaction('auditoriasIdentidad', 'readwrite')
+    await Promise.all([
+      tx.objectStore('auditoriasIdentidad').put(auditoria),
+      tx.done,
+    ])
   }
 
   async listarAuditorias() {
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
     return (await this.dbPromise).getAll('auditoriasIdentidad')
   }
 
@@ -123,7 +138,7 @@ export class LocalRepository implements ReportRepository {
   }
 
   async saveRepresalia(represalia: Represalia) {
-    // TODO: En producción, registrar el aviso mediante una Azure Function.
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
     await (await this.dbPromise).put('represalias', represalia)
   }
 
@@ -132,15 +147,23 @@ export class LocalRepository implements ReportRepository {
   }
 
   async listRepresalias() {
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
     return (await this.dbPromise).getAll('represalias')
   }
 
   async guardarAvisoSupervisor(aviso: AvisoSupervisor) {
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
     await (await this.dbPromise).put('avisosSupervisores', aviso)
   }
 
   async listarAvisosSupervisor() {
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
     return (await this.dbPromise).getAll('avisosSupervisores')
+  }
+
+  async actualizarRepresalia(represalia: Represalia) {
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
+    await (await this.dbPromise).put('represalias', represalia)
   }
 
   async agregarPendiente(item: ColaPendiente, identidad?: Identidad) {
@@ -164,7 +187,8 @@ export class LocalRepository implements ReportRepository {
     faena: Faena,
     identidad?: Identidad,
   ) {
-    // TODO: En producción, Azure Functions enviaría el reporte y el aviso a SharePoint por Microsoft Graph.
+    // TODO: En producción: esto se valida en el servidor con Entra ID, nunca en el navegador.
+    // Azure Functions enviaría el reporte y el aviso a SharePoint por Microsoft Graph.
     const db = await this.dbPromise
     const tx = db.transaction(
       ['reportes', 'avisosSupervisores', 'identidades'],
@@ -199,7 +223,7 @@ export class LocalRepository implements ReportRepository {
       id: `aviso-${reporte.id}`,
       reporteId: reporte.id,
       faenaNombre: faena.nombre,
-      resumen: reporte.queHabriaPasado,
+      resumen: reporte.que,
       fechaSoloDia: new Date(reporte.creadoEn).toLocaleDateString('sv-SE'),
     }
     const writes: Promise<unknown>[] = [

@@ -48,6 +48,7 @@ export function TrackingPage() {
   const [resultado, setResultado] = useState<ResultadoConsulta | null>(null)
   const [consultaValida, setConsultaValida] = useState(false)
   const [pendiente, setPendiente] = useState(false)
+  const [retaliationStatus, setRetaliationStatus] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lockState, setLockState] = useState(getInitialLockState)
@@ -79,6 +80,7 @@ export function TrackingPage() {
     setError(null)
     setResultado(null)
     setPendiente(false)
+    setRetaliationStatus(null)
     setConsultaValida(false)
     setShowRetaliationForm(false)
     setRetaliationSaved(false)
@@ -116,6 +118,13 @@ export function TrackingPage() {
         resetTrackingAttempts()
         setLockState({ blockedUntil: 0, error: null, now: Date.now() })
         setConsultaValida(true)
+        const retaliation = (await repository.listRepresalias())
+          .filter(
+            (item) =>
+              normalizarCodigoSeguimiento(item.codigoSeguimiento) === normalizedCode,
+          )
+          .sort((left, right) => right.fecha.localeCompare(left.fecha))[0]
+        setRetaliationStatus(retaliation?.estado ?? null)
         if (pendingMatch) {
           setPendiente(true)
         } else if (reporte) {
@@ -230,6 +239,11 @@ export function TrackingPage() {
           {resultado.medidaCorrectiva && (
             <p>
               <strong>Medida correctiva:</strong> {resultado.medidaCorrectiva}
+            </p>
+          )}
+          {retaliationStatus && (
+            <p className="retaliation-status" role="status">
+              Aviso de represalia: {retaliationStatus}
             </p>
           )}
         </section>

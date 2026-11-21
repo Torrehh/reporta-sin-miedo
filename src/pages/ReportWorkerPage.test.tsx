@@ -88,7 +88,7 @@ describe('flujo de reporte del trabajador', () => {
     expect(reporte).not.toHaveProperty('nombre')
     expect(identidad?.nombre).toBe('Nombre de prueba')
     expect(identidad?.reporteId).toBe(reporte.id)
-    expect(aviso.resumen).toBe('Golpe o caída')
+    expect(aviso.resumen).toBe('Una rama cayó cerca del camino')
     expect(aviso.faenaNombre).toBe(faena.nombre)
     expect(aviso.fechaSoloDia).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })

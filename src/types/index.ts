@@ -58,7 +58,7 @@ export interface Represalia {
   id: string
   codigoSeguimiento: string
   fecha: string
-  estado: 'Nueva'
+  estado: 'Nueva' | 'En revisión' | 'Resuelta'
 }
 
 export interface AvisoSupervisor {
