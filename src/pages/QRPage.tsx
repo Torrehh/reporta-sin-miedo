@@ -228,6 +228,10 @@ export function QRPage() {
         <p className="eyebrow">Administración</p>
         <h1>Códigos QR por faena</h1>
       </header>
+      <p className="qr-published-note">
+        Genera e imprime los QR desde la dirección publicada (github.io), no desde el entorno de
+        desarrollo.
+      </p>
       {message && <p className="confirmation" role="status">{message}</p>}
       {error && <p className="error-message" role="alert">{error}</p>}
 

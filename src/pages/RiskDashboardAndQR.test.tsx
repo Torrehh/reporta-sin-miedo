@@ -138,6 +138,11 @@ describe('tablero de riesgos y administración QR', () => {
     startStaffSession('gerente-a13')
     renderAt('/staff/qr')
     expect(await screen.findByRole('heading', { name: 'Códigos QR por faena' })).toBeTruthy()
+    expect(
+      screen.getByText(
+        'Genera e imprime los QR desde la dirección publicada (github.io), no desde el entorno de desarrollo.',
+      ),
+    ).toBeTruthy()
 
     cleanup()
     startStaffSession('prevencionista-designado')

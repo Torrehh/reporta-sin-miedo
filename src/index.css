@@ -828,6 +828,43 @@ button:disabled {
   flex-basis: 100%;
 }
 
+.pwa-notice {
+  position: fixed;
+  z-index: 30;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: min(460px, calc(100% - 24px));
+  padding: 10px 12px;
+  color: #fff;
+  background: #123b68;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgb(23 35 58 / 25%);
+  font-size: 14px;
+}
+
+.pwa-notice button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 8px 12px;
+  color: #17233a;
+  background: #fff;
+  font-size: 14px;
+}
+
+.qr-published-note {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  color: #102a43;
+  background: #e6eef7;
+  border-left: 4px solid #123b68;
+  border-radius: 4px;
+  line-height: 1.5;
+}
+
 @media (max-width: 420px) {
   .demo-bar {
     align-items: stretch;

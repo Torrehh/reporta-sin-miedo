@@ -11,6 +11,7 @@ import { IdentityAuditPage, ManagerRetaliationsPage } from './pages/ManagerPages
 import { StaffReportDetailPage, StaffReportsPage } from './pages/StaffReportsPage'
 import { SupervisorNoticesPage } from './pages/SupervisorNoticesPage'
 import { MANAGER_ROLES, PREVENTION_ROLES, QR_ADMIN_ROLES, type StaffRole } from './services/staffSession'
+import { PwaStatus } from './components/PwaStatus'
 
 const SUPERVISOR_ROLES: StaffRole[] = ['supervisor-faena']
 const RiskDashboardPage = lazy(() =>
@@ -89,6 +90,7 @@ function AppContent() {
   const location = useLocation()
   return (
     <>
+      <PwaStatus />
       {!location.pathname.startsWith('/staff') && <DemoBar />}
       <AppRoutes />
     </>
