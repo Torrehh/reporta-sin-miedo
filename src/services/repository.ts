@@ -8,6 +8,7 @@ import type {
   Reporte,
   Represalia,
 } from '../types'
+import { normalizarCodigoSeguimiento } from '../utils/tracking'
 
 interface ReportaDB extends DBSchema {
   faenas: { key: string; value: Faena }
@@ -24,12 +25,15 @@ export interface ReportRepository {
   obtenerFaena(faenaId: string): Promise<Faena | undefined>
   guardarFaena(faena: Faena): Promise<void>
   listarReportes(): Promise<Reporte[]>
+  getReporteByCodigo(codigo: string): Promise<Reporte | undefined>
   obtenerReportePorCodigo(codigo: string): Promise<Reporte | undefined>
   guardarReporte(reporte: Reporte): Promise<void>
   obtenerIdentidad(reporteId: string): Promise<Identidad | undefined>
   guardarIdentidad(identidad: Identidad): Promise<void>
   registrarAuditoria(auditoria: AuditoriaIdentidad): Promise<void>
   listarAuditorias(): Promise<AuditoriaIdentidad[]>
+  saveRepresalia(represalia: Represalia): Promise<void>
+  listRepresalias(): Promise<Represalia[]>
   guardarRepresalia(represalia: Represalia): Promise<void>
   listarRepresalias(): Promise<Represalia[]>
   guardarAvisoSupervisor(aviso: AvisoSupervisor): Promise<void>
@@ -78,9 +82,19 @@ export class LocalRepository implements ReportRepository {
     return (await this.dbPromise).getAll('reportes')
   }
 
-  async obtenerReportePorCodigo(codigo: string) {
+  async getReporteByCodigo(codigo: string) {
+    // TODO: En producción, consultar el reporte mediante una Azure Function.
+    const codigoNormalizado = normalizarCodigoSeguimiento(codigo)
+    if (!codigoNormalizado) return undefined
     const reportes = await this.listarReportes()
-    return reportes.find((reporte) => reporte.codigoSeguimiento === codigo)
+    return reportes.find(
+      (reporte) =>
+        normalizarCodigoSeguimiento(reporte.codigoSeguimiento) === codigoNormalizado,
+    )
+  }
+
+  async obtenerReportePorCodigo(codigo: string) {
+    return this.getReporteByCodigo(codigo)
   }
 
   async guardarReporte(reporte: Reporte) {
@@ -105,10 +119,19 @@ export class LocalRepository implements ReportRepository {
   }
 
   async guardarRepresalia(represalia: Represalia) {
+    return this.saveRepresalia(represalia)
+  }
+
+  async saveRepresalia(represalia: Represalia) {
+    // TODO: En producción, registrar el aviso mediante una Azure Function.
     await (await this.dbPromise).put('represalias', represalia)
   }
 
   async listarRepresalias() {
+    return this.listRepresalias()
+  }
+
+  async listRepresalias() {
     return (await this.dbPromise).getAll('represalias')
   }
 
