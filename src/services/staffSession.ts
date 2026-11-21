@@ -80,3 +80,8 @@ export const PREVENTION_ROLES: StaffRole[] = [
 ]
 
 export const MANAGER_ROLES: StaffRole[] = ['gerente-a13']
+
+export const QR_ADMIN_ROLES: StaffRole[] = [
+  'prevencionista-designado',
+  'gerente-a13',
+]

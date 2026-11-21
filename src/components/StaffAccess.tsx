@@ -4,6 +4,8 @@ import {
   endStaffSession,
   getStaffSession,
   MANAGER_ROLES,
+  PREVENTION_ROLES,
+  QR_ADMIN_ROLES,
   type StaffRole,
 } from '../services/staffSession'
 
@@ -39,13 +41,19 @@ export function StaffLayout({ children }: { children: ReactNode }) {
     session.role === 'supervisor-faena'
       ? [{ to: '/staff/avisos', label: 'Avisos' }]
       : [
-          { to: '/staff/reportes', label: 'Reportes' },
-          { to: '/staff/qr', label: 'Códigos QR' },
+          ...(PREVENTION_ROLES.includes(session.role)
+            ? [{ to: '/staff/reportes', label: 'Reportes' }]
+            : []),
+          ...(QR_ADMIN_ROLES.includes(session.role)
+            ? [{ to: '/staff/qr', label: 'Códigos QR' }]
+            : []),
+          ...(PREVENTION_ROLES.includes(session.role)
+            ? [{ to: '/staff/tablero', label: 'Tablero' }]
+            : []),
           ...(MANAGER_ROLES.includes(session.role)
             ? [
                 { to: '/staff/auditoria', label: 'Auditoría' },
                 { to: '/staff/represalias', label: 'Represalias' },
-                { to: '/staff/tablero', label: 'Tablero' },
               ]
             : []),
         ]

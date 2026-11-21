@@ -178,13 +178,3 @@ export function ManagerRetaliationsPage() {
     </main>
   )
 }
-
-export function ManagerDashboardPage() {
-  return (
-    <main className="card staff-card">
-      <p className="eyebrow">Gerencia A13</p>
-      <h1>Tablero</h1>
-      <p>Próximamente</p>
-    </main>
-  )
-}

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { HashRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { DemoBar } from './components/DemoBar'
 import { ReportWorkerPage } from './pages/ReportWorkerPage'
@@ -7,12 +7,17 @@ import { StaffPage } from './pages/StaffPage'
 import { QRPage } from './pages/QRPage'
 import { startQueueListeners } from './services/queue'
 import { StaffSection } from './components/StaffAccess'
-import { ManagerDashboardPage, IdentityAuditPage, ManagerRetaliationsPage } from './pages/ManagerPages'
+import { IdentityAuditPage, ManagerRetaliationsPage } from './pages/ManagerPages'
 import { StaffReportDetailPage, StaffReportsPage } from './pages/StaffReportsPage'
 import { SupervisorNoticesPage } from './pages/SupervisorNoticesPage'
-import { MANAGER_ROLES, PREVENTION_ROLES, type StaffRole } from './services/staffSession'
+import { MANAGER_ROLES, PREVENTION_ROLES, QR_ADMIN_ROLES, type StaffRole } from './services/staffSession'
 
 const SUPERVISOR_ROLES: StaffRole[] = ['supervisor-faena']
+const RiskDashboardPage = lazy(() =>
+  import('./pages/RiskDashboardPage').then((module) => ({
+    default: module.RiskDashboardPage,
+  })),
+)
 
 function NotFoundPage() {
   return (
@@ -42,7 +47,7 @@ export function AppRoutes() {
       />
       <Route
         path="/staff/qr"
-        element={<StaffSection allowedRoles={PREVENTION_ROLES}><QRPage /></StaffSection>}
+        element={<StaffSection allowedRoles={QR_ADMIN_ROLES}><QRPage /></StaffSection>}
       />
       <Route
         path="/staff/avisos"
@@ -58,7 +63,11 @@ export function AppRoutes() {
       />
       <Route
         path="/staff/tablero"
-        element={<StaffSection allowedRoles={MANAGER_ROLES}><ManagerDashboardPage /></StaffSection>}
+        element={
+          <Suspense fallback={<main className="card"><p role="status">Cargando tablero…</p></main>}>
+            <StaffSection allowedRoles={PREVENTION_ROLES}><RiskDashboardPage /></StaffSection>
+          </Suspense>
+        }
       />
       <Route path="/staff/*" element={<StaffSection allowedRoles={[]}><></></StaffSection>} />
       <Route path="*" element={<NotFoundPage />} />
