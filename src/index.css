@@ -92,3 +92,250 @@ button,
   background: #dbe6f1;
   color: #17233a;
 }
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+.worker-card {
+  margin-top: 20px;
+  padding: clamp(18px, 5vw, 32px);
+}
+
+.worker-heading {
+  margin-bottom: 24px;
+}
+
+.worker-heading h1 {
+  margin-bottom: 8px;
+  color: #11294a;
+  font-size: clamp(28px, 8vw, 38px);
+  line-height: 1.15;
+}
+
+.eyebrow {
+  margin-bottom: 8px;
+  color: #4b617b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.report-form {
+  display: grid;
+  gap: 24px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.field > label,
+.field legend {
+  color: #17233a;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.field textarea,
+.field input[type="text"] {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px;
+  color: #17233a;
+  background: #fff;
+  border: 1px solid #71839a;
+  border-radius: 8px;
+}
+
+.field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.field-hint {
+  margin: 0;
+  color: #4b617b;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.check-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 48px;
+  color: #17233a;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.check-label input {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  accent-color: #123b68;
+}
+
+.injury-field {
+  padding: 14px;
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+
+.choice-field legend {
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.choice-button {
+  min-height: 56px;
+  padding: 10px;
+  color: #17233a;
+  background: #f3f6fa;
+  border: 2px solid #a6b5c6;
+  line-height: 1.25;
+}
+
+.choice-button.selected {
+  color: #fff;
+  background: #123b68;
+  border-color: #123b68;
+}
+
+.time-grid .choice-button {
+  font-size: 15px;
+}
+
+.consent-label {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.submit-button,
+.button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  color: #fff;
+  background: #123b68;
+  border: 2px solid #123b68;
+  font-size: 18px;
+}
+
+.submit-button {
+  width: 100%;
+  min-height: 64px;
+  font-size: 20px;
+}
+
+.submit-button:hover:not(:disabled),
+.button-primary:hover:not(:disabled) {
+  background: #0c2b4d;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.error-message {
+  margin: 0;
+  padding: 12px;
+  color: #8b1e1e;
+  background: #fff0ef;
+  border-left: 4px solid #b42318;
+  border-radius: 4px;
+}
+
+.injury-message,
+.pending-message,
+.confirmation {
+  padding: 18px;
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+
+.injury-message {
+  background: #fff4d6;
+  border-left: 5px solid #a44b12;
+}
+
+.injury-message h2,
+.pending-message h2,
+.confirmation h2 {
+  margin-bottom: 10px;
+  color: #11294a;
+  font-size: 23px;
+}
+
+.tracking-code {
+  margin: 18px 0;
+  padding: 14px 8px;
+  color: #11294a;
+  background: #fff;
+  border: 1px dashed #71839a;
+  border-radius: 8px;
+  font-size: clamp(22px, 7vw, 30px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.photo-preview {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+}
+
+.photo-preview img {
+  width: min(100%, 360px);
+  max-height: 240px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #eef3f8;
+}
+
+.demo-bar [role="status"],
+.demo-bar .error-message {
+  flex-basis: 100%;
+}
+
+@media (max-width: 420px) {
+  .demo-bar {
+    align-items: stretch;
+  }
+
+  .demo-bar label {
+    flex-basis: 100%;
+  }
+
+  .demo-bar button {
+    flex: 1 1 130px;
+  }
+
+  .card {
+    width: calc(100% - 20px);
+    margin: 14px auto;
+  }
+
+  .worker-card {
+    padding: 16px;
+  }
+}

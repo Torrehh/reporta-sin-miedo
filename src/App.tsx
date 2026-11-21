@@ -1,9 +1,11 @@
+import { useEffect } from 'react'
 import { HashRouter, Link, Navigate, Route, Routes } from 'react-router-dom'
 import { DemoBar } from './components/DemoBar'
 import { ReportWorkerPage } from './pages/ReportWorkerPage'
 import { TrackingPage } from './pages/TrackingPage'
 import { StaffPage } from './pages/StaffPage'
 import { QRPage } from './pages/QRPage'
+import { startQueueListeners } from './services/queue'
 
 function NotFoundPage() {
   return (
@@ -17,6 +19,8 @@ function NotFoundPage() {
 }
 
 function App() {
+  useEffect(() => startQueueListeners(), [])
+
   return (
     <HashRouter>
       <DemoBar />

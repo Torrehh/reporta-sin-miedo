@@ -21,6 +21,7 @@ interface ReportaDB extends DBSchema {
 
 export interface ReportRepository {
   listarFaenas(): Promise<Faena[]>
+  obtenerFaena(faenaId: string): Promise<Faena | undefined>
   guardarFaena(faena: Faena): Promise<void>
   listarReportes(): Promise<Reporte[]>
   obtenerReportePorCodigo(codigo: string): Promise<Reporte | undefined>
@@ -33,9 +34,14 @@ export interface ReportRepository {
   listarRepresalias(): Promise<Represalia[]>
   guardarAvisoSupervisor(aviso: AvisoSupervisor): Promise<void>
   listarAvisosSupervisor(): Promise<AvisoSupervisor[]>
-  agregarPendiente(item: ColaPendiente): Promise<void>
+  agregarPendiente(item: ColaPendiente, identidad?: Identidad): Promise<void>
   listarPendientes(): Promise<ColaPendiente[]>
   eliminarPendiente(id: string): Promise<void>
+  registrarReporteEnviado(
+    reporte: Reporte,
+    faena: Faena,
+    identidad?: Identidad,
+  ): Promise<Reporte>
   reiniciarDemo(): Promise<void>
 }
 
@@ -60,6 +66,10 @@ export class LocalRepository implements ReportRepository {
     return (await this.dbPromise).getAll('faenas')
   }
 
+  async obtenerFaena(faenaId: string) {
+    return (await this.dbPromise).get('faenas', faenaId)
+  }
+
   async guardarFaena(faena: Faena) {
     await (await this.dbPromise).put('faenas', faena)
   }
@@ -74,7 +84,6 @@ export class LocalRepository implements ReportRepository {
   }
 
   async guardarReporte(reporte: Reporte) {
-    // TODO: En producción, Azure Functions enviaría este dato a SharePoint por Microsoft Graph.
     await (await this.dbPromise).put('reportes', reporte)
   }
 
@@ -111,8 +120,12 @@ export class LocalRepository implements ReportRepository {
     return (await this.dbPromise).getAll('avisosSupervisores')
   }
 
-  async agregarPendiente(item: ColaPendiente) {
-    await (await this.dbPromise).put('colaPendiente', item)
+  async agregarPendiente(item: ColaPendiente, identidad?: Identidad) {
+    const db = await this.dbPromise
+    const tx = db.transaction(['colaPendiente', 'identidades'], 'readwrite')
+    const writes = [tx.objectStore('colaPendiente').put(item)]
+    if (identidad) writes.push(tx.objectStore('identidades').put(identidad))
+    await Promise.all([...writes, tx.done])
   }
 
   async listarPendientes() {
@@ -121,6 +134,58 @@ export class LocalRepository implements ReportRepository {
 
   async eliminarPendiente(id: string) {
     await (await this.dbPromise).delete('colaPendiente', id)
+  }
+
+  async registrarReporteEnviado(
+    reporte: Reporte,
+    faena: Faena,
+    identidad?: Identidad,
+  ) {
+    // TODO: En producción, Azure Functions enviaría el reporte y el aviso a SharePoint por Microsoft Graph.
+    const db = await this.dbPromise
+    const tx = db.transaction(
+      ['reportes', 'avisosSupervisores', 'identidades'],
+      'readwrite',
+    )
+    const reportes = await tx.objectStore('reportes').getAll()
+    const existente = reportes.find((item) => item.id === reporte.id)
+    if (existente) {
+      if (identidad) await tx.objectStore('identidades').put(identidad)
+      await tx.done
+      return existente
+    }
+
+    const ahora = Date.now()
+    const reportesDeLaHora = reportes.filter(
+      (item) => {
+        const recibido = new Date(item.fechaRecepcion ?? item.creadoEn).getTime()
+        return (
+          !item.esDemo &&
+          item.faenaId === reporte.faenaId &&
+          ahora - recibido < 60 * 60 * 1000 &&
+          ahora >= recibido
+        )
+      },
+    ).length
+    const reporteGuardado = {
+      ...reporte,
+      fechaRecepcion: new Date(ahora).toISOString(),
+      marcadoRevision: reporte.marcadoRevision || reportesDeLaHora >= 20,
+    }
+    const aviso: AvisoSupervisor = {
+      id: `aviso-${reporte.id}`,
+      reporteId: reporte.id,
+      faenaNombre: faena.nombre,
+      resumen: reporte.queHabriaPasado,
+      fechaSoloDia: new Date(reporte.creadoEn).toLocaleDateString('sv-SE'),
+    }
+    const writes: Promise<unknown>[] = [
+      tx.objectStore('reportes').put(reporteGuardado),
+      tx.objectStore('avisosSupervisores').put(aviso),
+    ]
+    if (identidad) writes.push(tx.objectStore('identidades').put(identidad))
+    await Promise.all([...writes, tx.done])
+    return reporteGuardado
   }
 
   async reiniciarDemo() {

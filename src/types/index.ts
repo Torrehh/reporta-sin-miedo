@@ -35,6 +35,7 @@ export interface Reporte {
   investigacion?: string
   medidaCorrectiva?: string
   creadoEn: string
+  fechaRecepcion?: string
   marcadoRevision: boolean
   esDemo: boolean
 }
@@ -72,4 +73,5 @@ export interface ColaPendiente {
   id: string
   reporteBorrador: Reporte
   creadoEn: string
+  estado: 'Pendiente de envío'
 }
