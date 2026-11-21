@@ -1,2 +1,13 @@
-# reporta-sin-miedo
-PWA para reportar casi-accidentes de forma confidencial y sin señal. Caso ANDALIÉN, Área A13.
+# Reporta Sin Miedo
+
+Prototipo PWA en español para reportar casi-accidentes de forma rápida y confidencial.
+
+## Desarrollo
+
+```bash
+npm install
+npm run dev
+npm run build
+```
+
+La documentación completa, el despliegue y las limitaciones se completarán al finalizar todas las fases.
